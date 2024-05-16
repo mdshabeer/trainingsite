@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AWS Training</title>
+    <style>
+        /* Add your CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        nav ul li {
+            margin-left: 20px;
+        }
+        nav ul li a {
+            color: #fff;
+            text-decoration: none;
+            padding: 10px;
+        }
+        nav ul li a:hover {
+            background-color: #555;
+        }
+        .dropdown {
+            position: relative;
+        }
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+        .course {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        main {
+            padding: 20px;
+            flex: 1;
+        }
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>AWS Training</h1>
+        <nav>
+            <ul>
+                <li><a href="#about">About Us</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0)">Courses</a>
+                    <div class="dropdown-content">
+                        <a href="#">AWS Fundamentals</a>
+                        <a href="#">AWS Solutions Architect</a>
+                        <a href="#">AWS Developer</a>
+                    </div>
+                </li>
+                <li><a href="#contact">Contact Us</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="about">
+            <h2>About Us</h2>
+            <p>Welcome to our AWS training program. We offer comprehensive courses to help you master AWS services and technologies.</p>
+            <p>Our team of experienced instructors is dedicated to providing hands-on learning experiences to equip you with the skills needed to succeed in the cloud.</p>
+        </section>
+
+        <section id="courses">
+            <h2>Offerings</h2>
+            <div class="course">
+                <h3>AWS Fundamentals</h3>
+                <p>Duration: 4 weeks</p>
+                <p>Description: Learn the basics of AWS cloud computing, including EC2, S3, and IAM.</p>
+            </div>
+            <div class="course">
+                <h3>AWS Solutions Architect</h3>
+                <p>Duration: 8 weeks</p>
+                <p>Description: Dive deeper into AWS services and architecture best practices to become a certified Solutions Architect.</p>
+            </div>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <p>If you have any questions or inquiries about our training programs, please feel free to reach out to us:</p>
+            <ul>
+                <li>Email: info@awstraining.com</li>
+                <li>Phone: 123-456-7890</li>
+            </ul>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 AWS Training. All rights reserved.</p>
+    </footer>
+</body>
+</html>
