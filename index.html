@@ -12,58 +12,75 @@
             background: #f4f4f4;
         }
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 20px;
-            background-color: #333;
-            color: white;
-        }
-        .header .branding {
-            font-size: 1.8rem;
-        }
-        .nav-menu {
-            list-style-type: none;
-            margin: 0;
-            padding: 0;
-            display: flex;
-        }
-        .nav-menu li {
-            position: relative;
-        }
-        .nav-menu > li > a {
-            display: inline-block;
-            padding: 10px 15px;
-            text-decoration: none;
-            color: white;
-            transition: background 0.3s ease;
-        }
-        .nav-menu > li > a:hover,
-        .nav-menu li ul li a:hover {
-            background: #575757;
-        }
-        .nav-menu li ul {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            margin: 0;
-            padding: 0;
-            list-style-type: none;
-            background-color: #333;
-            border-radius: 0 0 4px 4px;
-        }
-        .nav-menu li:hover ul,
-        .nav-menu li ul:hover {
-            display: block;
-        }
-        .nav-menu li ul li a {
-            display: block;
-            padding: 10px;
-            text-decoration: none;
-            color: white;
-            transition: background 0.3s ease;
-        }
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.branding {
+    font-size: 1.8rem;
+    /* If you want to keep the branding on the same line as auth-nav, 
+       set it to align-items: center and use flex in next selector.*/
+}
+
+.auth-nav {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    padding-bottom: 10px; /* Add space below auth-nav row */
+}
+
+.auth-nav a {
+    text-decoration: none;
+    color: white;
+    padding: 10px 15px;
+    margin-left: 10px;
+}
+
+.nav-menu {
+    list-style-type: none;
+    padding-left: 0;
+    width: 100%; /* Ensures nav-menu spans the full width */
+    display: flex;
+    justify-content: flex-start; /* Align nav-menu items to the left */
+}
+
+.nav-menu li {
+    padding: 0 10px;
+    position: relative; /* For dropdown position context */
+}
+
+.nav-menu > li > a {
+    text-decoration: none;
+    color: white;
+    display: block;
+    padding: 10px 15px;
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    left: 0;
+    background-color: #333;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-menu li:hover .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu li a {
+    padding: 10px 15px;
+    display: block;
+    text-decoration: none;
+    color: white;
+}
+
         .main-content {
             padding: 20px;
         }
@@ -110,23 +127,26 @@
 </head>
 <body>
 
-<div class="header">
-    <div class="branding">ABC Training Solutions</div>
-    <ul class="nav-menu">
-        <li><a href="#about-us">About Us</a></li>
-        <li>
-            <a href="#trainings">Trainings ▼</a>
-            <ul>
-                <li><a href="#intro-to-ai">AI</a></li>
-                <li><a href="#machine-learning">Machine Learning</a></li>
-                <li><a href="#python">Python</a></li>
-            </ul>
-        </li>
-        <li><a href="#projects">Projects</a></li>
-        <li><a href="#contact-us">Contact Us</a></li>
-    </ul>
-</div>
-
+    <div class="header">
+        <div class="branding">ABC Training Solutions</div>
+        <div class="auth-nav">
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        </div>
+        <ul class="nav-menu">
+            <li><a href="#about-us">About Us</a></li>
+            <li><a href="#trainings">Trainings</a>
+                <ul class="dropdown-menu">
+                    <li><a href="#intro-to-ai">AI</a></li>
+                    <li><a href="#machine-learning">Machine Learning</a></li>
+                    <li><a href="#python">Python</a></li>
+                </ul>
+            </li>
+            <li><a href="#projects">Projects</a></li>
+            <li><a href="#contact-us">Contact Us</a></li>
+        </ul>
+    </div>
+        
 <div class="main-content">
     <!-- Training Content Sections -->
     <div class="section" id="intro-to-ai">
