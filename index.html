@@ -3,134 +3,217 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AWS Training</title>
+    <title>AI Training Site</title>
     <style>
-        /* Add your CSS styles here */
+        /* ... Previous styling remains the same ... */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
+            background: #f4f4f4;
         }
-        header {
-            background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
         }
-        nav ul {
+        .header .branding {
+            font-size: 1.8rem;
+        }
+        .nav-menu {
             list-style-type: none;
-            padding: 0;
             margin: 0;
+            padding: 0;
             display: flex;
         }
-        nav ul li {
-            margin-left: 20px;
-        }
-        nav ul li a {
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-        }
-        nav ul li a:hover {
-            background-color: #555;
-        }
-        .dropdown {
+        .nav-menu li {
             position: relative;
         }
-        .dropdown-content {
+        .nav-menu > li > a {
+            display: inline-block;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.3s ease;
+        }
+        .nav-menu > li > a:hover,
+        .nav-menu li ul li a:hover {
+            background: #575757;
+        }
+        .nav-menu li ul {
             display: none;
             position: absolute;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
+            top: 100%;
+            left: 0;
+            margin: 0;
+            padding: 0;
+            list-style-type: none;
+            background-color: #333;
+            border-radius: 0 0 4px 4px;
         }
-        .dropdown:hover .dropdown-content {
+        .nav-menu li:hover ul,
+        .nav-menu li ul:hover {
             display: block;
         }
-        .dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
+        .nav-menu li ul li a {
             display: block;
-        }
-        .dropdown-content a:hover {
-            background-color: #ddd;
-        }
-        .course {
-            border: 1px solid #ccc;
             padding: 10px;
-            margin-bottom: 20px;
+            text-decoration: none;
+            color: white;
+            transition: background 0.3s ease;
         }
-        main {
+        .main-content {
             padding: 20px;
-            flex: 1;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section h2 {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 15px;
+            margin: 0 0 10px 0;
+            border-radius: 4px 4px 0 0;
+        }
+        .section-content {
+            border: 1px solid #333;
+            border-top: none;
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 0 0 4px 4px;
+        }
+        .section-content ul {
+            list-style-type: disc;
+            margin-left: 20px;
         }
         footer {
             background-color: #333;
-            color: #fff;
-            padding: 10px 20px;
-            flex-shrink: 0;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            margin-top: 50px;
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>AWS Training</h1>
-        <nav>
+
+<div class="header">
+    <div class="branding">ABC Training Solutions</div>
+    <ul class="nav-menu">
+        <li><a href="#about-us">About Us</a></li>
+        <li>
+            <a href="#trainings">Trainings ▼</a>
             <ul>
-                <li><a href="#about">About Us</a></li>
-                <li class="dropdown">
-                    <a href="javascript:void(0)">Courses</a>
-                    <div class="dropdown-content">
-                        <a href="#">AWS Fundamentals</a>
-                        <a href="#">AWS Solutions Architect</a>
-                        <a href="#">AWS Developer</a>
-                    </div>
-                </li>
-                <li><a href="#contact">Contact Us</a></li>
+                <li><a href="#intro-to-ai">AI</a></li>
+                <li><a href="#machine-learning">Machine Learning</a></li>
+                <li><a href="#python">Python</a></li>
             </ul>
-        </nav>
-    </header>
+        </li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#contact-us">Contact Us</a></li>
+    </ul>
+</div>
 
-    <main>
-        <section id="about">
-            <h2>About Us</h2>
-            <p>Welcome to our AWS training program. We offer comprehensive courses to help you master AWS services and technologies.</p>
-            <p>Our team of experienced instructors is dedicated to providing hands-on learning experiences to equip you with the skills needed to succeed in the cloud.</p>
-        </section>
-
-        <section id="courses">
-            <h2>Offerings</h2>
-            <div class="course">
-                <h3>AWS Fundamentals</h3>
-                <p>Duration: 4 weeks</p>
-                <p>Description: Learn the basics of AWS cloud computing, including EC2, S3, and IAM.</p>
-            </div>
-            <div class="course">
-                <h3>AWS Solutions Architect</h3>
-                <p>Duration: 8 weeks</p>
-                <p>Description: Dive deeper into AWS services and architecture best practices to become a certified Solutions Architect.</p>
-            </div>
-        </section>
-
-        <section id="contact">
-            <h2>Contact Us</h2>
-            <p>If you have any questions or inquiries about our training programs, please feel free to reach out to us:</p>
+<div class="main-content">
+    <!-- Training Content Sections -->
+    <div class="section" id="intro-to-ai">
+        <h2>1. Introduction to AI and Machine Learning</h2>
+        <div class="section-content">
             <ul>
-                <li>Email: info@awstraining.com</li>
-                <li>Phone: 123-456-7890</li>
+                <li>Definition of AI and Machine Learning</li>
+                <li>Different types of Machine Learning</li>
+                <li>Real-world applications of AI</li>
             </ul>
-        </section>
-    </main>
+        </div>
+    </div>
+    <div class="section" id="dev-env-setup">
+        <h2>2. Development Environment Setup</h2>
+        <div class="section-content">
+            <ul>
+                <li>Installing Python and Jupyter Notebook</li>
+                <li>Setting up a virtual environment</li>
+                <li>Installing necessary libraries: numpy, scipy, scikit-learn</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="python-basics">
+        <h2>3. Python Basics for AI</h2>
+        <div class="section-content">
+            <ul>
+                <li>Variables, Data types, and Operators</li>
+                <li>Control Structures: if, for, while</li>
+                <li>Functions and Modules</li>
+                <li>Numpy and Pandas for data manipulation</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="fundamental-ml-concepts">
+        <h2>4. Fundamental Concepts in ML</h2>
+        <div class="section-content">
+            <ul>
+                <li>Understanding dataset structure</li>
+                <li>Feature selection and engineering</li>
+                <li>Model selection: Overfitting vs. Underfitting</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="iris-dataset">
+        <h2>5. Working with the Iris Dataset</h2>
+        <div class="section-content">
+            <ul>
+                <li>Loading the dataset with scikit-learn</li>
+                <li>Exploring and visualizing data</li>
+                <li>Preparing training and test sets</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="building-classifier">
+        <h2>6. Building the Classifier</h2>
+        <div class="section-content">
+            <ul>
+                <li>Choosing an algorithm: K-Nearest Neighbors</li>
+                <li>Training the model with knn.fit()</li>
+                <li>Making predictions with knn.predict()</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="evaluating-model">
+        <h2>7. Evaluating the Model</h2>
+        <div class="section-content">
+            <ul>
+                <li>Calculating accuracy with the test set</li>
+                <li>Understanding confusion matrix and classification report</li>
+                <li>Using cross-validation for more robust evaluation</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="experimenting-tuning">
+        <h2>8. Experimenting and Tuning</h2>
+        <div class="section-content">
+            <ul>
+                <li>Tuning hyperparameters</li>
+                <li>Using grid search for parameter optimization</li>
+                <li>Trying different ML algorithms</li>
+            </ul>
+        </div>
+    </div>
+    <div class="section" id="advanced-topics">
+        <h2>9. Next Steps and Advanced Topics</h2>
+        <div class="section-content">
+            <ul>
+                <li>Saving and loading models</li>
+                <li>Handling larger datasets</li>
+                <li>Introduction to deep learning</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-    <footer>
-        <p>&copy; 2024 AWS Training. All rights reserved.</p>
-    </footer>
+<footer>
+    <p>© 2023 AI Training Site</p>
+</footer>
+
 </body>
 </html>
