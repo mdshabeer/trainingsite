@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Training Site</title>
+    <title>Happy Learning!!!</title>
+     <!-- Include the Amplify minified CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@aws-amplify/ui/dist/style.css">
+
+  <!-- Ensure the Amplify library is loaded. -->
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+
     <style>
         /* ... Previous styling remains the same ... */
         body {
@@ -126,7 +132,33 @@
     </style>
 </head>
 <body>
+<!-- Somewhere in your HTML -->
+  <div id="welcomeSection">
+      Welcome, <span id="userName"></span>!
+  </div>
 
+  <script>
+    // Initialize Amplify
+    Amplify.configure({
+      Auth: {
+        region: 'us-west-1',
+        userPoolId: 'us-west-1_TBE4onJm4',
+        userPoolWebClientId: '3llj4ng9sf54h0fhgboc8355ug',
+        // other Amplify config
+      }
+    });
+    
+    // Check current session and display user name
+    Amplify.Auth.currentAuthenticatedUser()
+      .then(user => {
+        const name = user.attributes.name; // Adjust attribute if needed e.g., 'given_name' or 'family_name'
+        document.getElementById('userName').textContent = name;
+      })
+      .catch(err => {
+        console.error('Error retrieving current user:', err);
+        // Handle errors, such as redirect to login page, et cetera.
+      });
+  </script>
     <div class="header">
         <div class="branding">ABC Training Solutions</div>
         <div class="auth-nav">
