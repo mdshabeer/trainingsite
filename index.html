@@ -130,14 +130,8 @@
     }
 
     </style>
-</head>
-<body>
-<!-- Somewhere in your HTML -->
-  <div id="welcomeSection">
-      Welcome, <span id="userName"></span>!
-  </div>
-
-  <script>
+<script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js" onload="handleAmplifyLoad()">
+    <script>
     function handleAmplifyLoad() {
         // Initialize Amplify
         Amplify.configure({
@@ -163,7 +157,14 @@
         });
     }
 </script>
-<script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js" onload="handleAmplifyLoad()">
+
+</head>
+<body>
+<!-- Somewhere in your HTML -->
+  <div id="welcomeSection">
+      Welcome, <span id="userName"></span>!
+  </div>
+  
 </script>
     <div class="header">
         <div class="branding">Coding Compass</div>
