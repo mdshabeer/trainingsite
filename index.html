@@ -138,29 +138,33 @@
   </div>
 
   <script>
-    // Initialize Amplify
-    Amplify.configure({
-      Auth: {
-        region: 'us-west-1',
-        userPoolId: 'us-west-1_TBE4onJm4',
-        userPoolWebClientId: '3llj4ng9sf54h0fhgboc8355ug',
-        // other Amplify config
-      }
-    });
-    
-    // Check current session and display user name
-    Amplify.Auth.currentAuthenticatedUser()
-      .then(user => {
-          alert(user.attributes.name);
-        const name = user.attributes.name; // Adjust attribute if needed e.g., 'given_name' or 'family_name'
-        document.getElementById('userName').textContent = name;
-      })
-      .catch(err => {
-          alert(err);
-        console.error('Error retrieving current user:', err);
-        // Handle errors, such as redirect to login page, et cetera.
-      });
-  </script>
+    function handleAmplifyLoad() {
+        // Initialize Amplify
+        Amplify.configure({
+            Auth: {
+                region: 'us-west-1',
+                userPoolId: 'us-west-1_TBE4onJm4',
+                userPoolWebClientId: '3llj4ng9sf54h0fhgboc8355ug',
+                // other Amplify config
+            }
+        });
+
+        // Check current session and display user name
+        Amplify.Auth.currentAuthenticatedUser()
+        .then(user => {
+            alert(user.attributes.name);
+            const name = user.attributes.name; // Adjust attribute if needed e.g., 'given_name' or 'family_name'
+            document.getElementById('userName').textContent = name;
+        })
+        .catch(err => {
+            alert(err);
+            console.error('Error retrieving current user:', err);
+            // Handle errors, such as redirect to login page, et cetera.
+        });
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js" onload="handleAmplifyLoad()">
+</script>
     <div class="header">
         <div class="branding">Coding Compass</div>
         <div class="auth-nav">
