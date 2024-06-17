@@ -453,3 +453,324 @@ discriminator.save('discriminator_model.h5')
 gan.save('gan_model.h5')
 
 # Note: Full training loop would include training the discriminator and generator
+
+Sample Programs
+1. Training a Basic GAN:
+# Required libraries
+import numpy as np
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, LeakyReLU, Flatten, Reshape
+from tensorflow.keras.optimizers import Adam
+
+# Load and preprocess MNIST dataset
+(X_train, _), (_, _) = mnist.load_data()
+X_train = (X_train.astype(np.float32) - 127.5) / 127.5
+X_train = X_train.reshape(X_train.shape[0], 784)
+
+# GAN hyperparameters
+latent_dim = 100
+adam_lr = 0.0002
+adam_beta_1 = 0.5
+
+# Generator
+def create_generator():
+    model = Sequential()
+    model.add(Dense(256, input_dim=latent_dim))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(512))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(1024))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(28*28, activation='tanh'))
+    model.add(Reshape((28, 28, 1)))
+    return model
+
+# Discriminator
+def create_discriminator():
+    model = Sequential()
+    model.add(Flatten(input_shape=(28, 28, 1)))
+    model.add(Dense(512))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(256))
+    model.add(LeakyReLU(alpha=0.2))
+    model.add(Dense(1, activation='sigmoid'))
+    model.compile(optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1), loss='binary_crossentropy', metrics=['accuracy'])
+    return model
+
+# Create GAN
+def create_gan(generator, discriminator):
+    discriminator.trainable = False
+    model = Sequential()
+    model.add(generator)
+    model.add(discriminator)
+    model.compile(optimizer=Adam(lr=adam_lr, beta_1=adam_beta_1), loss='binary_crossentropy')
+    return model
+
+generator = create_generator()
+discriminator = create_discriminator()
+gan = create_gan(generator, discriminator)
+
+# Training the GAN
+epochs = 10000
+batch_size = 64
+for epoch in range(epochs):
+    # Training discriminator
+    idx = np.random.randint(0, X_train.shape[0], batch_size)
+    real_imgs = X_train[idx]
+    noise = np.random.normal(0, 1, (batch_size, latent_dim))
+    fake_imgs = generator.predict(noise)
+    real_y = np.ones((batch_size, 1))
+    fake_y = np.zeros((batch_size, 1))
+    d_loss_real = discriminator.train_on_batch(real_imgs, real_y)
+    d_loss_fake = discriminator.train_on_batch(fake_imgs, fake_y)
+    
+    # Training generator
+    noise = np.random.normal(0, 1, (batch_size, latent_dim))
+    g_loss = gan.train_on_batch(noise, real_y)
+    
+    # Logging and output
+    if (epoch+1) % (epochs/10) == 0:
+        print(f"Epoch {epoch+1}/{epochs} - D Loss: {(d_loss_real[0]+d_loss_fake[0])/2}, G Loss: {g_loss}")
+
+
+2. Building a Variational Autoencoder for Image Generation:
+# Required libraries
+from tensorflow.keras.datasets import mnist
+from tensorflow.keras.layers import Dense, Input, Lambda, Flatten, Reshape
+from tensorflow.keras.models import Model
+from tensorflow.keras.losses import binary_crossentropy
+from tensorflow.keras import backend as K
+
+# Load and preprocess MNIST dataset
+(x_train, _), (x_test, _) = mnist.load_data()
+x_train = x_train.astype('float32') / 255.
+x_train = x_train.reshape((len(x_train), np.prod(x_train.shape[1:])))
+x_test = x_test.astype('float32') / 255.
+x_test = x_test.reshape((len(x_test), np.prod(x_test.shape[1:])))
+
+# VAE hyperparameters
+original_dim = 784
+latent_dim = 2
+intermediate_dim = 256
+batch_size = 128
+epochs = 50
+epsilon_std = 1.0
+
+# Encoder
+x = Input(shape=(original_dim,))
+h = Dense(intermediate_dim, activation='relu')(x)
+z_mean = Dense(latent_dim)(h)
+z_log_var = Dense(latent_dim)(h)
+
+# Sample new similar points from the latent space
+def sampling(args):
+    z_mean, z_log_var = args
+    epsilon = K.random_normal(shape=(K.shape(z_mean)[0], latent_dim), mean=0., stddev=epsilon_std)
+    return z_mean + K.exp(z_log_var / 2) * epsilon
+
+z = Lambda(sampling, output_shape=(latent_dim,))([z_mean, z_log_var])
+
+# Map sampled latent points back to reconstructed inputs
+decoder_h = Dense(intermediate_dim, activation='relu')
+decoder_mean = Dense(original_dim, activation='sigmoid')
+h_decoded = decoder_h(z)
+x_decoded_mean = decoder_mean(h_decoded)
+
+# VAE model
+vae = Model(x, x_decoded_mean)
+
+# Calculate VAE loss
+xent_loss = original_dim * binary_crossentropy(x, x_decoded_mean)
+kl_loss = -0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
+vae_loss = K.mean(xent_loss + kl_loss)
+
+vae.add_loss(vae_loss)
+vae.compile(optimizer='rmsprop')
+
+vae.fit(x_train, shuffle=True, epochs=epochs, batch_size=batch_size, validation_data=(x_test, None))
+
+3. Creating Deepfakes with First Order Model:
+
+To use the First Order Model, you would typically need to clone the repository and follow instructions provided by the authors. However, here is a conceptual glimpse at how one might perform animation in Python using pre-existing models.
+
+import imageio
+from demo import load_checkpoints, make_animation
+from skimage import img_as_ubyte
+
+# Load the pre-trained model
+generator, kp_detector = load_checkpoints(config_path='config/vox-256.yaml', 
+                                          checkpoint_path='vox-cpk.pth.tar')
+
+# Load the source image and driving video
+source_image = imageio.imread('path_to_source_image.png')
+driving_video = imageio.mimread('path_to_driving_video.mp4')
+
+# Resize image and video to 256x256 if necessary
+
+# Perform animation (this will take some time)
+predictions = make_animation(source_image, driving_video, generator, kp_detector, relative=True)
+
+# Save the result
+imageio.mimsave('generated.mp4', [img_as_ubyte(frame) for frame in predictions], fps=30)
+
+4. Music Generation with Magenta:
+
+# Import necessary libraries
+from magenta.models.melody_rnn import melody_rnn_sequence_generator
+from magenta.models.shared import sequence_generator_bundle
+from magenta.music.protobuf import generator_pb2
+from magenta.music.protobuf import music_pb2
+
+# Initialize the model
+bundle = sequence_generator_bundle.read_bundle_file('/path/to/melody_rnn.mag')
+generator_map = melody_rnn_sequence_generator.get_generator_map()
+melody_rnn = generator_map['lookback_rnn'](checkpoint=None, bundle=bundle)
+melody_rnn.initialize()
+
+# Generate a melody from a primer
+primer_sequence = music_pb2.NoteSequence()  # This can be a sequence you created or an empty one
+
+# Set the start and the end time for generation
+total_seconds = 10  # For example, generate 10 seconds of music
+generator_options = generator_pb2.GeneratorOptions()
+generator_options.generate_sections.add(start_time=0, end_time=total_seconds)
+
+# Generate the sequence
+sequence = melody_rnn.generate(primer_sequence, generator_options)
+
+# Save the generated MIDI file
+midi_io.note_sequence_to_midi_file(sequence, 'generated_melody.mid')
+
+5. Video Frame Interpolation with DAIN:
+
+Please note that using DAIN requires a good understanding of the project structure and usually involves setting up a suitable environment with specific versions of PyTorch and other dependencies. The below lines are a simplified overview of how you might use the tool in Python:
+# Assuming the DAIN project is correctly installed and set up on your computer with all dependencies:
+import os
+from DAIN import DAIN
+
+# Initialize the DAIN model
+mydain = DAIN.DAIN()
+
+# Set the paths for your input and output videos
+input_video_path = '/path/to/input_video.mp4'
+output_video_path = '/path/to/output_video.mp4'
+
+# Prepare the input video frames
+frame_folder = '/path/to/input_frames'
+os.makedirs(frame_folder, exist_ok=True)
+mydain.extract_frames(input_video_path, frame_folder)
+
+# Perform frame interpolation to increase frame rate
+interpolated_frame_folder = '/path/to/interpolated_frames'
+os.makedirs(interpolated_frame_folder, exist_ok=True)
+mydain.interpolate_frames(frame_folder, interpolated_frame_folder)
+
+# Combine the interpolated frames back into a video
+mydain.frames_to_video(interpolated_frame_folder, output_video_path)
+
+# Clean up frames from disk if desired
+# ...
+
+6. Text-to-Speech (TTS) Synthesis with Mozilla TTS:
+
+Suppose you want to use an open-source project such as Mozilla's TTS to convert text into speech. Here is a conceptual example of how you could set this up. Note that actual implementation requires more setup, including installing the TTS engine, downloading pre-trained models, and managing dependencies.
+# Import the necessary library from Mozilla TTS
+from TTS.utils.synthesizer import Synthesizer
+
+# Load the pre-trained model (assuming you've downloaded it previously)
+model_path = '/path/to/the/pretrained/model.pth.tar'
+config_path = '/path/to/the/model/config.json'
+synthesizer = Synthesizer(
+    model_path,
+    config_path
+)
+
+# Synthesize speech from text
+text = "Hello, world. This is an example of text-to-speech synthesis."
+wav = synthesizer.tts(text)
+
+# Save the output to a .wav file
+with open('output.wav', 'wb') as audio_file:
+    audio_file.write(wav)
+
+7. Image Enhancement with Super-Resolution (SRGAN):
+
+Super-resolution is another area where GANs are used to enhance the image quality. Here's a conceptual example of how you can perform super-resolution using a pre-trained SRGAN model:
+from ISR.models import RDN
+
+# Assuming the 'rdn-C6-D20-G64-G064-x2' architecture is used
+rdn = RDN(weights='psnr-large')
+
+# Load the image
+lr_img = imageio.imread('low_res_input.jpg')
+
+# Perform super-resolution
+sr_img = rdn.predict(lr_img)
+
+# Save the super-resolved image
+imageio.imwrite('high_res_output.jpg', sr_img)
+
+8. Interactive Narrative Generation with OpenAI's GPT-3:
+
+Using GPT-3 for generating interactive narratives or stories involves prompting the model with a scenario and letting it generate the continuation. Here's a simplified example using OpenAI's API for GPT-3. Please note that an API key is required and should be kept confidential.
+
+import openai
+
+openai.api_key = 'your-api-key'
+
+# Start a prompt for an interactive narrative
+prompt_text = "You are a wizard in the kingdom of Larion. You are known for your skill in the light elements. One evening, an orc with a riddle comes to your door."
+
+response = openai.Completion.create(
+    engine="davinci-codex",
+    prompt=prompt_text,
+    max_tokens=150
+)
+
+# Continue the story based on the model's output
+story_continuation = response.choices[0].text.strip()
+print(story_continuation)
+
+9. Molecular Structure Generation for Drug Discovery:
+
+In drug discovery, generative models can be applied to design new molecular structures that could lead to medical breakthroughs. Here is a high-level example using the RDKit library for cheminformatics. The example will not execute molecule generation but demonstrates how you might set up your environment.
+
+from rdkit import Chem
+from rdkit.Chem import Draw
+
+# Import your generative model here (e.g., a RNN or VAE trained for molecular generation)
+
+# For demonstration purposes, we'll use a SMILES string that corresponds to a known molecule
+# In a real scenario, the model would generate this string
+example_smiles = 'CCO'
+
+# Generate a molecule object and visualize it
+molecule = Chem.MolFromSmiles(example_smiles)
+Draw.MolToImage(molecule)
+
+10. 3D Object Generation for Virtual Reality (VR):
+
+Generative AI can be used to create 3D objects that can be rendered in virtual reality. One of the ways is to use a generative model trained on 3D object datasets. Here's a conceptual framework using TensorFlow Graphics for 3D object generation:
+# TensorFlow Graphics modules for 3D generative modeling
+import tensorflow as tf
+import tensorflow_graphics as tfg
+from tensorflow_graphics.notebooks import threejs_visualization
+
+# Import your generative model for 3D data here (such as a 3D-VAE or 3D-GAN)
+
+# For demonstration, randomly generate a point cloud representing a 3D object
+num_points = 1024
+points = tf.random.uniform((1, num_points, 3), minval=-0.5, maxval=0.5)
+
+# Render the point cloud for visual inspection
+threejs_visualization.render_point_cloud(points)
+
+11. Customized Clothing Designs:
+
+Fashion designers and retail companies are starting to use AI to create new clothing designs. For example, one might use a GAN to generate new prints and patterns:
+11. Customized Clothing Designs:
+
+Fashion designers and retail companies are starting to use AI to create new clothing designs. For example, one might use a GAN to generate new prints and patterns:
+
+
