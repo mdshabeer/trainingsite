@@ -158,3 +158,107 @@ image_path = "mnist_test_image_0.png"
 prepared_image = load_and_prepare_image(image_path)
 predicted_class = make_prediction(model, prepared_image)
 print("Predicted class for 'mnist_test_image_0.png':", predicted_class)
+
+3.
+The Python script uses TensorFlow and Keras to build and train an LSTM network for predicting the closing stock prices of Apple (AAPL) using historical data, visualizing actual and predicted values with Matplotlib.
+
+- Disables oneDNN optimizations and bypasses SSL verification, possibly for troubleshooting non-production environments.
+- Downloads historical AAPL stock data using yfinance from 2010 to 2020 and scales the closing prices between 0 and 1.
+- Prepares training and testing datasets from the scaled data with a specified look-back period for the LSTM model.
+- Defines, compiles, and trains an LSTM network with mean squared error loss and uses it to predict stock prices.
+- Plots and compares the actual stock prices with the model's predictions for both training and testing sets using Matplotlib.
+
+  # This Python script uses TensorFlow and Keras to build an LSTM model
+# to predict the closing stock price of Apple (AAPL) using historical data.
+import os
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+import matplotlib.pyplot as plt
+import ssl
+import yfinance as yf
+import requests
+
+
+# Set the default SSL context to use the system certs
+ssl._create_default_https_context = ssl.create_default_context
+
+# Set TensorFlow environment variable to disable oneDNN optimizations
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+# Disable oneDNN optimizations in TensorFlow
+os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
+import tensorflow as tf
+
+# WARNING: Disabling SSL/TLS verification for troubleshooting purposes.
+# This should NEVER be used in production code due to security risks.
+requests.packages.urllib3.disable_warnings()
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# Download historical stock price data for Apple Inc.
+data = yf.download('AAPL', start='2010-01-01', end='2020-12-31')
+
+# Ensure data was downloaded successfully
+if data.empty:
+    raise Exception('Failed to download stock data. Script will exit.')
+
+# Select the "Close" column and convert to numpy array
+close_prices = data['Close'].values.reshape(-1, 1)
+
+# Scale the data to be between 0 and 1
+scaler = MinMaxScaler(feature_range=(0, 1))
+scaled_data = scaler.fit_transform(close_prices)
+
+# Function to create a dataset for LSTM input
+def create_dataset(dataset, look_back=1):
+    X, Y = [], []
+    for i in range(len(dataset) - look_back - 1):
+        a = dataset[i:(i + look_back), 0]
+        X.append(a)
+        Y.append(dataset[i + look_back, 0])
+    return np.array(X), np.array(Y)
+
+# Set look back period and create the dataset
+look_back = 60
+X, Y = create_dataset(scaled_data, look_back)
+
+# Split data into training and test sets
+train_size = int(len(X) * 0.67)
+X_train, X_test = X[:train_size], X[train_size:]
+Y_train, Y_test = Y[:train_size], Y[train_size:]
+
+# Reshape input data to be [samples, time steps, features]
+X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
+X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
+
+# Define the LSTM network
+model = Sequential()
+model.add(LSTM(units=50, return_sequences=True, input_shape=(look_back, 1)))
+model.add(LSTM(units=50))
+model.add(Dense(1))
+
+# Compile and train the model
+model.compile(loss='mean_squared_error', optimizer='adam')
+model.fit(X_train, Y_train, epochs=5, batch_size=1, verbose=1)
+
+# Make predictions on training and test sets
+train_predict = model.predict(X_train)
+test_predict = model.predict(X_test)
+
+# Inverse scale predictions and targets for plotting
+train_predict = scaler.inverse_transform(train_predict)
+test_predict = scaler.inverse_transform(test_predict)
+Y_train = scaler.inverse_transform([Y_train])
+Y_test = scaler.inverse_transform([Y_test])
+
+# Plot the actual and predicted stock prices
+plt.figure(figsize=(15, 8))
+plt.plot(close_prices, label='Actual Stock Price')
+plt.plot(np.arange(look_back, look_back + len(train_predict)), train_predict.ravel(), label='Train Predict')
+plt.plot(np.arange(look_back + len(train_predict), look_back + len(train_predict) + len(test_predict)), test_predict.ravel(), label='Test Predict')
+plt.xlabel('Time')
+plt.ylabel('Stock Price')
+plt.title('AAPL Stock Price Prediction')
+plt.legend()
+plt.show()
