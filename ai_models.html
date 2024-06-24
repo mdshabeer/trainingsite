@@ -82,9 +82,120 @@ print("Model intercept:", log_reg.intercept_)
 
 
      - *Support Vector Machines (SVM)*: Effective for high-dimensional spaces.
+A powerful classification method that works well in high-dimensional spaces, capable of performing linear or non-linear classification.
+Example Use-Cases: Face detection, text categorization, image classification, bioinformatics (e.g., cancer classification using gene expression data).
+Performance Metrics: Similar to logistic regression, common metrics are Accuracy, Precision, Recall, F1-Score, and depending on the specific use-case, the Area Under the ROC Curve (AUC).
+Kernel Trick: SVMs can use the kernel trick to handle non-linear input spaces, allowing them to find the optimal boundary in the transformed feature space.
+Margin Maximization: SVMs aim to maximize the margin between the decision boundary and the closest samples from each class, which are called support vectors. This property often leads to good generalization on unseen data.
+Here's a sample Python code using scikit-learn for SVM:
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+
+# Load the Iris dataset (a small and simple dataset for illustration purposes)
+iris = datasets.load_iris()
+X, y = iris.data, iris.target
+
+# Split the data into training and test sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Feature scaling to improve SVM performance
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)
+X_test_scaled = scaler.transform(X_test)
+
+# Initialize the Support Vector Classifier with a radial basis function (RBF) kernel
+svc = SVC(kernel='rbf', C=1.0, gamma='auto')
+
+# Fit the model to the scaled training data
+svc.fit(X_train_scaled, y_train)
+
+# Predict the class labels for the scaled testing set
+y_pred = svc.predict(X_test_scaled)
+
+# Calculate and print the accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
      - *Decision Trees*: Simple and interpretable classification or regression models.
+A non-parametric supervised learning method used for classification and regression that models decisions and their possible consequences, including chance event outcomes, resource costs, and utility.
+Example Use-Cases: Customer segmentation, predicting loan defaults, medical diagnoses, and any scenario where it is useful to understand the decision-making process.
+Performance Metrics: For classification, similar to SVM, using Accuracy, Precision, Recall, F1-Score, ROC-AUC; for regression, Mean Squared Error (MSE), Mean Absolute Error (MAE), and R² score.
+Interpretability: One of the key advantages of decision trees is their ease of interpretation and visualization. They can be easily understood even by non-experts.
+Overfitting: Decision trees can easily overfit to the training data if not carefully tuned. Techniques like pruning or setting a maximum depth can help prevent this.
+Here's a sample Python code using scikit-learn for Decision Trees:
+
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+# Load a simple dataset
+iris = load_iris()
+X, y = iris.data, iris.target
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+# Initialize the Decision Tree Classifier
+dec_tree = DecisionTreeClassifier(max_depth=3, random_state=42)
+
+# Fit the model to the training data
+dec_tree.fit(X_train, y_train)
+
+# Predict the class labels for the testing set
+y_pred = dec_tree.predict(X_test)
+
+# Calculate and print the accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
+# Optional: Export and visualize the decision tree
+from sklearn.tree import export_text
+tree_rules = export_text(dec_tree, feature_names=iris['feature_names'])
+print(tree_rules)
+
      - *Random Forest*: An ensemble of decision trees often used for better generalization.
+Consists of a large number of individual decision trees that operate as an ensemble. Each individual tree predicts the class label (for classification) or value (for regression), and the class label with the most votes or the average/median value becomes the model’s prediction.
+Example Use-Cases: Predicting stock price movements, patient disease risks, and forest cover types, among numerous others.
+Performance Metrics: Same as decision trees and other classification and regression models (Accuracy, Precision, Recall, F1-Score, ROC-AUC for classification; MSE, MAE, R² for regression).
+Reduction in Overfitting: Due to averaging the results of individual trees, random forests tend to overfit less than individual decision trees.
+Hyperparameter Tuning: Important hyperparameters to tune include the number of trees in the forest, the depth of trees, and the number of features considered for splitting at each leaf node.
+Here's a sample Python code using scikit-learn for Random Forest:
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score
+
+# Load a simple dataset
+iris = load_iris()
+X, y = iris.data, iris.target
+
+# Split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Initialize the Random Forest Classifier
+rand_forest = RandomForestClassifier(n_estimators=100, max_depth=3, random_state=42)
+
+# Fit the model to the training data
+rand_forest.fit(X_train, y_train)
+
+# Predict the class labels for the testing set
+y_pred = rand_forest.predict(X_test)
+
+# Calculate and print the accuracy
+accuracy = accuracy_score(y_test, y_pred)
+print(f"Accuracy: {accuracy}")
+
+# Feature importance (good for interpretation and understanding the decision-making process)
+importances = rand_forest.feature_importances_
+print("Feature importances:", importances)
+
+
      - *Gradient Boosting Machines (GBM)*: Another ensemble method that successively builds weak learners.
+
      - *K-Nearest Neighbors (KNN)*: Classifies data based on closest training samples in the feature space.
      - *Naive Bayes*: Applies Bayes' theorem with the "naive" assumption of independence between features.
 
