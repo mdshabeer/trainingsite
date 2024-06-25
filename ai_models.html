@@ -39,6 +39,13 @@ print(f"Mean Squared Error: {mse}")
 print("Model slope (weight):", lin_reg.coef_[0])
 print("Model intercept:", lin_reg.intercept_)
 
+# Predict a single value (e.g., for X=11)
+single_value = np.array([[11]])
+predicted_value = lin_reg.predict(single_value)
+
+print(f"The predicted value for X=11 is: {predicted_value[0]}")
+
+
      - *Logistic Regression*: Used for binary classification tasks.
  A statistical model that is used for binary classification tasks by modeling the probability of class membership (e.g., Yes/No, True/False).
 Example Use-Cases: Email spam detection, credit card fraud detection, or medical diagnosis where the outcomes are binary (e.g., disease/no disease).
