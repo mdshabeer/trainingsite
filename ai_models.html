@@ -211,9 +211,316 @@ print("Feature importances:", importances)
 
 2. **Deep Learning Models**:
    - **Convolutional Neural Networks (CNNs)**: Effective for image and video recognition, object detection.
+Convolutional Neural Networks (CNNs) are a class of deep neural networks that have proven to be highly effective in areas such as image recognition, object detection, and video analysis. CNNs are designed to process data that comes in the form of multiple arrays (e.g., a color image composed of three 2D arrays containing pixel intensities in the RGB color channels). Here are some key points about CNNs:
+
+- **Convolutional Layers**: The primary building block of a CNN is the convolutional layer that applies a number of filters (kernels) to the input data. These filters help the network detect spatial features such as edges, corners, textures, and more complex patterns at higher layers.
+
+- **Pooling Layers**: Often following convolutional layers, pooling (subsampling) layers reduce the spatial size of the representation, which decreases the number of parameters and computation in the network, and hence also helps to control overfitting.
+
+- **ReLU Activation**: The Rectified Linear Unit (ReLU) activation function is common in CNNs because it introduces non-linearity into the network, allowing them to model complex functions, while being computationally efficient.
+
+- **Fully Connected Layers**: Towards the output, CNNs typically have one or more fully connected layers (dense layers) where every input is connected to each output by a learned weight. These layers combine the features learned by the network to perform classification.
+
+- **Localization and Detection**: CNN architectures are often adapted or expanded with additional layers for specific tasks like localizing objects within an image or detecting various objects within a scene.
+
+Let's see a simple example of creating a CNN using TensorFlow and Keras for image classification:
+
+```python
+import tensorflow as tf
+from tensorflow.keras import layers, models
+
+# Define a simple CNN model
+model = models.Sequential()
+
+# Convolutional layer with ReLU activation and Max Pooling
+model.add(layers.Conv2D(32, (3, 3), activation='relu', input_shape=(32, 32, 3)))
+model.add(layers.MaxPooling2D((2, 2)))
+
+# Another Convolutional layer
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+model.add(layers.MaxPooling2D((2, 2)))
+
+# Another Convolutional layer
+model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+
+# Flatten the output of the conv layers to feed into a fully connected layer
+model.add(layers.Flatten())
+
+# Dense (fully connected) layer with ReLU activation
+model.add(layers.Dense(64, activation='relu'))
+
+# Output layer with softmax activation for classification
+model.add(layers.Dense(10, activation='softmax'))  # Assuming 10 classes
+
+# Compile the model
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+# Model summary
+model.summary()
+```
+
+This example creates a basic CNN with three convolutional layers, interspersed with max pooling layers, and followed by a fully connected layer and finally an output classification layer with softmax activation. In practice, to train such a network, you also need labeled image data, after which you would proceed with:
+
+```python
+# Assuming 'train_images', 'train_labels' hold your training data and labels
+model.fit(train_images, train_labels, epochs=5)
+
+# Evaluate the model
+test_loss, test_acc = model.evaluate(test_images, test_labels)
+print(f"Test accuracy: {test_acc}")
+```
+
+Here, we've omitted the preprocessing that you generally have to perform on your input data like normalizing pixel values and potentially augmenting the dataset with transformations to improve generalization. Keep in mind that real-world image classification tasks would require larger, deeper CNN models, such as AlexNet, VGGNet, ResNet, etc., more sophisticated preprocessing, and training strategies.
+
    - **Recurrent Neural Networks (RNNs)** and **LSTMs**: Suited for time series analysis and natural language processing due to their ability to retain information across time steps.
+Recurrent Neural Networks (RNNs) and Long Short-Term Memory networks (LSTMs) are classes of neural networks that are designed to handle sequential data. They are particularly well-suited for tasks where context or the order of data points is significant, such as time series analysis, natural language processing (NLP), speech recognition, and more. Let's delve into the concepts and differentiate between RNNs and LSTMs:
+
+**Recurrent Neural Networks (RNNs):**
+- **Sequential Data Processing**: RNNs are structured to take sequences of inputs over time, processing each element while retaining memory of the computations from the previous time step. This 'memory' involves passing the hidden state from one time step to the next, enabling the network to maintain contextual information.
+- **Challenges with Long-Term Dependencies**: Vanilla RNNs often struggle with learning long-range dependencies due to issues such as the vanishing and exploding gradient problems during backpropagation through time (BPTT).
+- **Shared Parameters**: Unlike feedforward neural networks, RNNs share the same parameters (weights and biases) across all time steps, which reduces the total number of parameters and helps in generalizing across sequences of varying lengths.
+
+**Long Short-Term Memory networks (LSTMs):**
+- **Improved Memory**: LSTMs are a special kind of RNN that are designed to capture long-term dependencies and overcome the limitations of vanilla RNNs. They contain special units called memory cells which allow information to be kept, modified, or forgotten over long sequences. This is made possible by mechanisms known as gates:
+  - **Input Gate**: Controls the extent to which a new value flows into the memory cell.
+  - **Forget Gate**: Decides what information is going to be thrown away from the cell state.
+  - **Output Gate**: Controls the extent to which the value in the cell is used to compute the output activation of the block.
+- **Handling Complex Sequences**: Due to their gating mechanisms, LSTMs are better equipped to learn from data where there are lags of unknown duration between important events.
+
+Here's a simple example illustrating how to implement an LSTM for sequence modeling using TensorFlow and Keras:
+
+```python
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+
+# Model definition
+model = Sequential()
+
+# LSTM layer with 50 units and input shape that matches the features of the time series data. 
+# 'return_sequences' is False because we only need the last output from the LSTM.
+model.add(LSTM(50, return_sequences=False, input_shape=(time_steps, features)))
+
+# Dense layer for output prediction
+model.add(Dense(output_size))
+
+# Model compilation
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Model summary
+model.summary()
+
+# Train the model (assuming 'X_train' and 'y_train' are prepared data)
+model.fit(X_train, y_train, epochs=10, batch_size=20)
+
+# Evaluate the model (using test data 'X_test' and 'y_test')
+test_loss = model.evaluate(X_test, y_test)
+```
+
+In this example, we assume a hypothetical time series dataset where `time_steps` correspond to the length of the sequence and `features` are the number of features for each time step. The `output_size` would correspond to the size of the prediction we're aiming to make—this could be one for a regression task or multiple, one per class, for classification.
+
+This code outlines the typical steps for defining, compiling, and training an LSTM model using Keras. In real-world applications, additional complexities such as data preprocessing (e.g., normalizing input data, padding sequences for consistent length), regularization techniques, and potentially stacking multiple LSTM layers or incorporating other types of layers might be necessary.
+
    - **Transformers**: Leverage attention mechanisms and have become state-of-the-art for many NLP tasks.
+Here are 4-5 bullet points covering key features of Transformers:
+
+- **Attention Mechanisms**: At the heart of Transformers is the attention mechanism, which allows the model to dynamically focus on different parts of the input sequence while generating each element of the output, improving the handling of long-range dependencies.
+- **Parallelization**: Unlike recurrent neural networks, Transformers process all input tokens simultaneously, which allows for high degrees of parallelization and training efficiency, enabling the use of much larger datasets.
+- **Scalability**: Transformers are highly scalable, meaning that they can be enlarged with more layers or larger hidden sizes to handle larger and more complex datasets, which has driven the development of very large pre-trained models like BERT and GPT-3.
+- **Transfer Learning**: Pre-trained Transformer models can be fine-tuned on a wide variety of NLP tasks, helping to achieve state-of-the-art performance with relatively small additional training datasets.
+- **Flexibility**: Transformers can be adapted for various NLP tasks such as language translation, text summarization, question-answering, and text generation, showcasing their versatility in the field.
+
+Below is sample code demonstrating how to use the Hugging Face `transformers` library to leverage the power of a pre-trained Transformer model, BERT, for a simple sentence classification task:
+
+```python
+# Using Hugging Face's transformers library
+from transformers import BertTokenizer, BertForSequenceClassification, pipeline
+from transformers import Trainer, TrainingArguments
+import torch
+from torch.utils.data import Dataset
+
+# Sample data (simple text classification task)
+sentences = ["Hello, how are you?", "The weather is great today!"]
+labels = [0, 1]  # hypothetical labels for each sentence
+
+# Preprocessing with a tokenizer suitable for BERT
+tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
+encoded_batch = tokenizer(sentences, padding=True, truncation=True, return_tensors="pt")
+
+# Encapsulating the data into a PyTorch dataset
+class SimpleDataset(Dataset):
+    def __init__(self, encodings, labels):
+        self.encodings = encodings
+        self.labels = labels
+    def __getitem__(self, idx):
+        item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
+        item['labels'] = torch.tensor(self.labels[idx])
+        return item
+    def __len__(self):
+        return len(self.labels)
+
+dataset = SimpleDataset(encoded_batch, labels)
+
+# Loading the pre-trained BERT model for sequence classification
+model = BertForSequenceClassification.from_pretrained('bert-base-uncased')
+
+# Training arguments
+training_args = TrainingArguments(
+    output_dir='./results',          # output directory for model predictions and checkpoints
+    num_train_epochs=3,              # number of training epochs
+    per_device_train_batch_size=8,   # batch size for training
+    per_device_eval_batch_size=8,    # batch size for evaluation
+)
+
+# Initialize the Trainer
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=dataset,
+    eval_dataset=None
+)
+
+# Train the model
+trainer.train()
+
+# Example of using the pipeline for inference once the model is trained
+classifier = pipeline('sentiment-analysis', model=model, tokenizer=tokenizer)
+
+# Predicting the label of a new sentence
+predictions = classifier("I love using transformer models!")
+print(predictions)
+```
+
+Note: The provided code assumes that you have the necessary libraries installed and that CUDA is properly set up in case of using a GPU. In a real-world scenario, you would want to have a proper dataset for fine-tuning the model and more complex data preprocessing and postprocessing steps.
+
    - **Generative Adversarial Networks (GANs)**: A system of two interacting networks for generating realistic synthetic data.
+Here are 4-5 bullet points covering key features of Generative Adversarial Networks (GANs):
+
+- **Dual Network Architecture**: GANs consist of two neural networks, the Generator and the Discriminator, which are trained simultaneously through adversarial processes. The Generator creates synthetic data, while the Discriminator evaluates its authenticity.
+- **Unsupervised Learning**: GANs are a form of unsupervised learning, as they do not require labeled datasets. The Generator learns to produce data that mimics the real data distribution without explicit pairings of input and output.
+- **Data Generation**: The main application of GANs is to generate realistic data samples that are indistinguishable from genuine data. They are particularly famous for generating high-quality images but can also be adapted for other types of data.
+- **Improved Synthetic Data Over Time**: As training progresses, the Generator becomes increasingly better at producing realistic samples, while the Discriminator becomes more skilled at detecting forgeries. This arms race leads to improvements in the quality of generated data.
+- **Versatility and Adaptability**: Beyond data generation, GANs have been used for tasks like image super-resolution, photo inpainting, style transfer, domain adaptation, and even drug discovery.
+
+Below is sample Python code using TensorFlow and Keras to create a basic GAN for generating synthetic images:
+
+```python
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras import layers
+from tensorflow.keras.datasets import mnist
+
+# Load MNIST data for training (assumes you want to generate digits)
+(train_images, _), (_, _) = mnist.load_data()
+train_images = train_images.reshape(train_images.shape[0], 28, 28, 1).astype('float32')
+train_images = (train_images - 127.5) / 127.5  # Normalize the images to [-1, 1]
+
+BUFFER_SIZE = 60000
+BATCH_SIZE = 256
+
+# Batch and shuffle the data
+train_dataset = tf.data.Dataset.from_tensor_slices(train_images).shuffle(BUFFER_SIZE).batch(BATCH_SIZE)
+
+# Create the Generator model
+def make_generator_model():
+    model = tf.keras.Sequential()
+    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(100,)))
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Reshape((7, 7, 256)))
+    assert model.output_shape == (None, 7, 7, 256)  # Note: None is the batch size
+
+    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
+    assert model.output_shape == (None, 7, 7, 128)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+    assert model.output_shape == (None, 14, 14, 64)
+    model.add(layers.BatchNormalization())
+    model.add(layers.LeakyReLU())
+
+    model.add(layers.Conv2DTranspose(1, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+    assert model.output_shape == (None, 28, 28, 1)
+
+    return model
+
+generator = make_generator_model()
+
+# Create the Discriminator model
+def make_discriminator_model():
+    model = tf.keras.Sequential()
+    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
+                                     input_shape=[28, 28, 1]))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU())
+    model.add(layers.Dropout(0.3))
+
+    model.add(layers.Flatten())
+    model.add(layers.Dense(1))
+
+    return model
+
+discriminator = make_discriminator_model()
+
+# Define the loss and optimizers
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+# Generator loss
+def generator_loss(fake_output):
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
+
+# Discriminator loss
+def discriminator_loss(real_output, fake_output):
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    total_loss = real_loss + fake_loss
+    return total_loss
+
+generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+
+# Set the training loop
+EPOCHS = 50
+noise_dim = 100
+num_examples_to_generate = 16
+
+# We will reuse this seed overtime to visualize progress
+seed = tf.random.normal([num_examples_to_generate, noise_dim])
+
+@tf.function
+def train_step(images):
+    noise = tf.random.normal([BATCH_SIZE, noise_dim])
+
+    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        generated_images = generator(noise, training=True)
+
+        real_output = discriminator(images, training=True)
+        fake_output = discriminator(generated_images, training=True)
+
+        gen_loss = generator_loss(fake_output)
+        disc_loss = discriminator_loss(real_output, fake_output)
+
+    gradients_of_generator = gen_tape.gradient(gen_loss, generator.trainable_variables)
+    gradients_of_discriminator = disc_tape.gradient(disc_loss, discriminator.trainable_variables)
+
+    generator_optimizer.apply_gradients(zip(gradients_of_generator, generator.trainable_variables))
+    discriminator_optimizer.apply_gradients(zip(gradients_of_discriminator, discriminator.trainable_variables))
+
+# Train the GAN
+for epoch in range(EPOCHS):
+    for image_batch in train_dataset:
+        train_step(image_batch)
+```
+
+Keep in mind that this code only includes the basic GAN architecture and omits the boilerplate for visualization, saving models, and more sophisticated training considerations. Training a GAN successfully often requires careful hyperparameter tuning and monitoring of the training process.
+
    - **Autoencoders and Variational Autoencoders (VAEs)**: For generative tasks, dimensionality reduction, and feature learning.
 
 3. **Symbolic AI**: 
